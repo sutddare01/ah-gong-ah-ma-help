@@ -1,7 +1,19 @@
+import { useState, useRef, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/lib/language-context";
 import { t } from "@/lib/languages";
+
+// Language code to BCP-47 speech synthesis mapping
+const langToSpeech: Record<string, string> = {
+  en: "en-SG",
+  zh: "zh-CN",
+  ms: "ms-MY",
+  ta: "ta-IN",
+  hk: "zh-CN",
+  ct: "zh-HK",
+  tc: "zh-CN",
+};
 
 // Mock AI explanations per language
 const mockExplanations: Record<string, string> = {
@@ -19,8 +31,40 @@ const ResultPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const image = (location.state as { image?: string })?.image;
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
 
   const explanation = mockExplanations[lang] || mockExplanations.en;
+
+  // Clean up speech on unmount
+  useEffect(() => {
+    return () => {
+      window.speechSynthesis.cancel();
+    };
+  }, []);
+
+  const handleSpeak = () => {
+    if (isSpeaking) {
+      window.speechSynthesis.cancel();
+      setIsSpeaking(false);
+      return;
+    }
+
+    // Strip emojis for cleaner speech
+    const cleanText = explanation.replace(/[\u{1F300}-\u{1FAFF}]|[\u{2600}-\u{27BF}]|🔹/gu, "");
+
+    const utterance = new SpeechSynthesisUtterance(cleanText);
+    utterance.lang = langToSpeech[lang] || "en-SG";
+    utterance.rate = 0.85; // Slightly slower for elderly
+    utterance.pitch = 1;
+
+    utterance.onend = () => setIsSpeaking(false);
+    utterance.onerror = () => setIsSpeaking(false);
+
+    utteranceRef.current = utterance;
+    setIsSpeaking(true);
+    window.speechSynthesis.speak(utterance);
+  };
 
   return (
     <div className="min-h-screen bg-background flex flex-col items-center px-4 py-8 pb-16">
@@ -46,12 +90,29 @@ const ResultPage = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="w-full max-w-md bg-card rounded-2xl p-6 shadow-soft mb-8"
+        className="w-full max-w-md bg-card rounded-2xl p-6 shadow-soft mb-4"
       >
         <p className="text-elder-base text-card-foreground whitespace-pre-line leading-relaxed">
           {explanation}
         </p>
       </motion.div>
+
+      {/* Listen button */}
+      <motion.button
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.4 }}
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.97 }}
+        onClick={handleSpeak}
+        className={`w-full max-w-md rounded-2xl p-5 shadow-medium text-elder-lg font-extrabold text-center mb-6 transition-colors ${
+          isSpeaking
+            ? "bg-destructive text-destructive-foreground"
+            : "bg-primary text-primary-foreground"
+        }`}
+      >
+        {isSpeaking ? t(lang, "stopButton") : t(lang, "listenButton")}
+      </motion.button>
 
       <div className="flex flex-col gap-3 w-full max-w-sm">
         <motion.button

@@ -50,40 +50,28 @@ export default {
   		},
   		fontSize: {
   			'elder-sm': [
-  				'1.125rem',
-  				{
-  					lineHeight: '1.6'
-  				}
+  				'calc(1.125rem * var(--text-scale, 1))',
+  				{ lineHeight: '1.6' }
   			],
   			'elder-base': [
-  				'1.25rem',
-  				{
-  					lineHeight: '1.6'
-  				}
+  				'calc(1.25rem * var(--text-scale, 1))',
+  				{ lineHeight: '1.6' }
   			],
   			'elder-lg': [
-  				'1.5rem',
-  				{
-  					lineHeight: '1.5'
-  				}
+  				'calc(1.5rem * var(--text-scale, 1))',
+  				{ lineHeight: '1.5' }
   			],
   			'elder-xl': [
-  				'1.875rem',
-  				{
-  					lineHeight: '1.4'
-  				}
+  				'calc(1.875rem * var(--text-scale, 1))',
+  				{ lineHeight: '1.4' }
   			],
   			'elder-2xl': [
-  				'2.25rem',
-  				{
-  					lineHeight: '1.3'
-  				}
+  				'calc(2.25rem * var(--text-scale, 1))',
+  				{ lineHeight: '1.3' }
   			],
   			'elder-3xl': [
-  				'3rem',
-  				{
-  					lineHeight: '1.2'
-  				}
+  				'calc(3rem * var(--text-scale, 1))',
+  				{ lineHeight: '1.2' }
   			]
   		},
   		colors: {

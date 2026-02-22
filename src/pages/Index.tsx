@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import heroImage from "@/assets/hero-illustration.png";
 import ScanButton from "@/components/ScanButton";
 import LanguagePicker from "@/components/LanguagePicker";
+import TextSizeControl from "@/components/TextSizeControl";
 import { useLanguage } from "@/lib/language-context";
 import { t } from "@/lib/languages";
 
@@ -19,7 +20,7 @@ const Index = () => {
       >
         <img
           src={heroImage}
-          alt="Ah Gong and Ah Ma"
+          alt="SteadyLA helper"
           className="w-36 h-36 mx-auto mb-4 rounded-full shadow-soft object-cover"
         />
         <h1 className="text-elder-2xl font-extrabold text-foreground">
@@ -35,9 +36,19 @@ const Index = () => {
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.3, duration: 0.5 }}
-        className="w-full flex justify-center mb-10"
+        className="w-full flex justify-center mb-8"
       >
         <ScanButton />
+      </motion.div>
+
+      {/* Text Size Control */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4, duration: 0.4 }}
+        className="mb-8"
+      >
+        <TextSizeControl />
       </motion.div>
 
       {/* Language Picker */}
