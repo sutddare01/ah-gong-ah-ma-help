@@ -8,6 +8,7 @@ import { TextSizeProvider } from "@/lib/text-size-context";
 import Index from "./pages/Index";
 import ScanPage from "./pages/ScanPage";
 import ResultPage from "./pages/ResultPage";
+import ChatPage from "./pages/ChatPage";
 import SettingsPage from "./pages/SettingsPage";
 import WelcomePage from "./pages/WelcomePage";
 import NotFound from "./pages/NotFound";
@@ -23,6 +24,7 @@ const AppRoutes = () => {
       <Route path="/welcome" element={<WelcomePage />} />
       <Route path="/scan" element={<ScanPage />} />
       <Route path="/result" element={<ResultPage />} />
+      <Route path="/chat" element={<ChatPage />} />
       <Route path="/settings" element={<SettingsPage />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
