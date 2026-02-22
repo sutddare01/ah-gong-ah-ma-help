@@ -60,14 +60,22 @@ const Index = () => {
         </motion.div>
       )}
 
-      {/* Scan Button */}
+      {/* Action Buttons */}
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.3, duration: 0.5 }}
-        className="w-full flex justify-center mb-10"
+        className="w-full flex flex-col items-center gap-4 mb-10 max-w-sm"
       >
         <ScanButton />
+        <motion.button
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.97 }}
+          onClick={() => navigate("/chat")}
+          className="w-full bg-accent text-accent-foreground rounded-2xl p-6 shadow-medium text-elder-xl font-extrabold text-center"
+        >
+          {t(lang, "chatButton")}
+        </motion.button>
       </motion.div>
 
       {/* Decorative Footer */}

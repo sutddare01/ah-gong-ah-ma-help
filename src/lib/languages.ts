@@ -44,6 +44,7 @@ export const translations: Record<string, Record<string, string>> = {
     textSize: "Text Size",
     listenButton: "🔊  Listen",
     stopButton: "⏹️  Stop",
+    chatButton: "💬  Ask Me Anything",
   },
   zh: {
     appName: "SteadyLA",
@@ -64,6 +65,7 @@ export const translations: Record<string, Record<string, string>> = {
     textSize: "文字大小",
     listenButton: "🔊  听一听",
     stopButton: "⏹️  停止",
+    chatButton: "💬  问我任何问题",
   },
   ms: {
     appName: "SteadyLA",
@@ -84,6 +86,7 @@ export const translations: Record<string, Record<string, string>> = {
     textSize: "Saiz Teks",
     listenButton: "🔊  Dengar",
     stopButton: "⏹️  Berhenti",
+    chatButton: "💬  Tanya Saya",
   },
   ta: {
     appName: "SteadyLA",
@@ -104,6 +107,7 @@ export const translations: Record<string, Record<string, string>> = {
     textSize: "எழுத்து அளவு",
     listenButton: "🔊  கேளுங்கள்",
     stopButton: "⏹️  நிறுத்து",
+    chatButton: "💬  எதையும் கேளுங்கள்",
   },
   hk: {
     appName: "SteadyLA",
@@ -124,6 +128,7 @@ export const translations: Record<string, Record<string, string>> = {
     textSize: "文字大小",
     listenButton: "🔊  听一听",
     stopButton: "⏹️  停止",
+    chatButton: "💬  问我任何问题",
   },
   ct: {
     appName: "SteadyLA",
@@ -144,6 +149,7 @@ export const translations: Record<string, Record<string, string>> = {
     textSize: "文字大小",
     listenButton: "🔊  听下",
     stopButton: "⏹️  停",
+    chatButton: "💬  问我乜都得",
   },
   tc: {
     appName: "SteadyLA",
@@ -164,6 +170,7 @@ export const translations: Record<string, Record<string, string>> = {
     textSize: "文字大小",
     listenButton: "🔊  听一下",
     stopButton: "⏹️  停",
+    chatButton: "💬  问我什么拢好",
   },
   vi: {
     appName: "SteadyLA",
@@ -184,6 +191,7 @@ export const translations: Record<string, Record<string, string>> = {
     textSize: "Cỡ chữ",
     listenButton: "🔊  Nghe",
     stopButton: "⏹️  Dừng",
+    chatButton: "💬  Hỏi Tôi",
     othersTitle: "🌏  Other Languages",
   },
   th: {
@@ -205,6 +213,7 @@ export const translations: Record<string, Record<string, string>> = {
     textSize: "ขนาดตัวอักษร",
     listenButton: "🔊  ฟัง",
     stopButton: "⏹️  หยุด",
+    chatButton: "💬  ถามฉัน",
     othersTitle: "🌏  Other Languages",
   },
   ko: {
@@ -226,6 +235,7 @@ export const translations: Record<string, Record<string, string>> = {
     textSize: "글자 크기",
     listenButton: "🔊  듣기",
     stopButton: "⏹️  멈추기",
+    chatButton: "💬  물어보세요",
     othersTitle: "🌏  Other Languages",
   },
   ja: {
@@ -247,6 +257,7 @@ export const translations: Record<string, Record<string, string>> = {
     textSize: "文字サイズ",
     listenButton: "🔊  聴く",
     stopButton: "⏹️  停止",
+    chatButton: "💬  聞いて",
     othersTitle: "🌏  Other Languages",
   },
   hi: {
@@ -268,6 +279,7 @@ export const translations: Record<string, Record<string, string>> = {
     textSize: "अक्षर का आकार",
     listenButton: "🔊  सुनें",
     stopButton: "⏹️  रुकें",
+    chatButton: "💬  पूछें",
     othersTitle: "🌏  Other Languages",
   },
 };
