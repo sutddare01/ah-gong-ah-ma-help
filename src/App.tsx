@@ -2,15 +2,32 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { LanguageProvider } from "@/lib/language-context";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { LanguageProvider, useLanguage } from "@/lib/language-context";
 import { TextSizeProvider } from "@/lib/text-size-context";
 import Index from "./pages/Index";
 import ScanPage from "./pages/ScanPage";
 import ResultPage from "./pages/ResultPage";
+import SettingsPage from "./pages/SettingsPage";
+import WelcomePage from "./pages/WelcomePage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
+
+const AppRoutes = () => {
+  const { hasChosenLang } = useLanguage();
+
+  return (
+    <Routes>
+      <Route path="/" element={hasChosenLang ? <Index /> : <Navigate to="/welcome" replace />} />
+      <Route path="/welcome" element={<WelcomePage />} />
+      <Route path="/scan" element={<ScanPage />} />
+      <Route path="/result" element={<ResultPage />} />
+      <Route path="/settings" element={<SettingsPage />} />
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  );
+};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -20,12 +37,7 @@ const App = () => (
           <Toaster />
           <Sonner />
           <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/scan" element={<ScanPage />} />
-              <Route path="/result" element={<ResultPage />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+            <AppRoutes />
           </BrowserRouter>
         </TooltipProvider>
       </TextSizeProvider>

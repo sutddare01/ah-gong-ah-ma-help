@@ -4,7 +4,6 @@ import { motion } from "framer-motion";
 import { useLanguage } from "@/lib/language-context";
 import { t } from "@/lib/languages";
 import { ArrowLeft } from "lucide-react";
-import LanguagePicker from "@/components/LanguagePicker";
 
 const ScanPage = () => {
   const { lang } = useLanguage();
@@ -90,7 +89,6 @@ const ScanPage = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col items-center px-4 py-8 pb-16">
-      {/* Back button */}
       <motion.button
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -112,7 +110,6 @@ const ScanPage = () => {
         {t(lang, "uploadDesc")}
       </p>
 
-      {/* Camera view */}
       {cameraOpen && !analyzing && (
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
@@ -120,14 +117,7 @@ const ScanPage = () => {
           className="flex flex-col items-center gap-4 w-full max-w-md mb-6"
         >
           <div className="relative w-full rounded-2xl overflow-hidden shadow-medium bg-foreground/5">
-            <video
-              ref={videoRef}
-              autoPlay
-              playsInline
-              muted
-              className="w-full rounded-2xl"
-              style={{ transform: "scaleX(-1)" }}
-            />
+            <video ref={videoRef} autoPlay playsInline muted className="w-full rounded-2xl" style={{ transform: "scaleX(-1)" }} />
           </div>
           <div className="flex gap-3 w-full">
             <motion.button
@@ -156,25 +146,15 @@ const ScanPage = () => {
       )}
 
       {analyzing && preview ? (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="flex flex-col items-center gap-6"
-        >
-          <img
-            src={preview}
-            alt="Scanned item"
-            className="w-64 h-64 object-cover rounded-2xl shadow-medium"
-          />
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center gap-6">
+          <img src={preview} alt="Scanned item" className="w-64 h-64 object-cover rounded-2xl shadow-medium" />
           <div className="flex items-center gap-3">
             <div className="w-5 h-5 rounded-full bg-primary animate-pulse-gentle" />
-            <span className="text-elder-lg font-bold text-foreground">
-              {t(lang, "analyzing")}
-            </span>
+            <span className="text-elder-lg font-bold text-foreground">{t(lang, "analyzing")}</span>
           </div>
         </motion.div>
       ) : !cameraOpen && (
-        <div className="flex flex-col gap-4 w-full max-w-sm mb-10">
+        <div className="flex flex-col gap-4 w-full max-w-sm">
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.97 }}
@@ -183,7 +163,6 @@ const ScanPage = () => {
           >
             {t(lang, "takePhoto")}
           </motion.button>
-
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.97 }}
@@ -192,26 +171,8 @@ const ScanPage = () => {
           >
             {t(lang, "chooseGallery")}
           </motion.button>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={handleFile}
-          />
+          <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFile} />
         </div>
-      )}
-
-      {/* Language Picker - shown below scan options */}
-      {!analyzing && !cameraOpen && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="w-full"
-        >
-          <LanguagePicker />
-        </motion.div>
       )}
     </div>
   );
