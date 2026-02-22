@@ -1,12 +1,18 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, Send } from "lucide-react";
+import { ArrowLeft, Send, Volume2, VolumeX } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { useLanguage } from "@/lib/language-context";
 import { t } from "@/lib/languages";
 
 type Msg = { role: "user" | "assistant"; content: string };
+
+const langToSpeech: Record<string, string> = {
+  en: "en-SG", zh: "zh-CN", ms: "ms-MY", ta: "ta-IN",
+  hk: "zh-CN", ct: "zh-HK", tc: "zh-CN", vi: "vi-VN",
+  th: "th-TH", ko: "ko-KR", ja: "ja-JP", hi: "hi-IN",
+};
 
 const chatPlaceholders: Record<string, string> = {
   en: "Ask me anything...",
@@ -44,7 +50,29 @@ const ChatPage = () => {
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [speakingIdx, setSpeakingIdx] = useState<number | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    return () => { window.speechSynthesis.cancel(); };
+  }, []);
+
+  const handleSpeak = useCallback((text: string, idx: number) => {
+    if (speakingIdx === idx) {
+      window.speechSynthesis.cancel();
+      setSpeakingIdx(null);
+      return;
+    }
+    window.speechSynthesis.cancel();
+    const clean = text.replace(/[\u{1F300}-\u{1FAFF}]|[\u{2600}-\u{27BF}]|[#*_~`>-]/gu, "");
+    const utterance = new SpeechSynthesisUtterance(clean);
+    utterance.lang = langToSpeech[lang] || "en-SG";
+    utterance.rate = 0.85;
+    utterance.onend = () => setSpeakingIdx(null);
+    utterance.onerror = () => setSpeakingIdx(null);
+    setSpeakingIdx(idx);
+    window.speechSynthesis.speak(utterance);
+  }, [speakingIdx, lang]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -187,8 +215,21 @@ const ChatPage = () => {
               }`}
             >
               {msg.role === "assistant" ? (
-                <div className="prose prose-sm max-w-none text-elder-base leading-relaxed">
-                  <ReactMarkdown>{msg.content}</ReactMarkdown>
+                <div>
+                  <div className="prose prose-sm max-w-none text-elder-base leading-relaxed">
+                    <ReactMarkdown>{msg.content}</ReactMarkdown>
+                  </div>
+                  <button
+                    onClick={() => handleSpeak(msg.content, i)}
+                    className={`mt-3 flex items-center gap-2 rounded-xl px-4 py-2 text-elder-sm font-bold transition-colors ${
+                      speakingIdx === i
+                        ? "bg-destructive/10 text-destructive"
+                        : "bg-primary/10 text-primary hover:bg-primary/20"
+                    }`}
+                  >
+                    {speakingIdx === i ? <VolumeX size={18} /> : <Volume2 size={18} />}
+                    {speakingIdx === i ? t(lang, "stopButton") : t(lang, "listenButton")}
+                  </button>
                 </div>
               ) : (
                 <p className="text-elder-base font-bold">{msg.content}</p>
