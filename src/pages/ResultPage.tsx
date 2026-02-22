@@ -13,6 +13,11 @@ const langToSpeech: Record<string, string> = {
   hk: "zh-CN",
   ct: "zh-HK",
   tc: "zh-CN",
+  vi: "vi-VN",
+  th: "th-TH",
+  ko: "ko-KR",
+  ja: "ja-JP",
+  hi: "hi-IN",
 };
 
 // Mock AI explanations per language
