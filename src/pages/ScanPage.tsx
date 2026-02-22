@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/lib/language-context";
@@ -9,23 +9,84 @@ const ScanPage = () => {
   const { lang } = useLanguage();
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const cameraInputRef = useRef<HTMLInputElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const streamRef = useRef<MediaStream | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [analyzing, setAnalyzing] = useState(false);
+  const [cameraOpen, setCameraOpen] = useState(false);
+  const [cameraError, setCameraError] = useState<string | null>(null);
+
+  const stopCamera = useCallback(() => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => track.stop());
+      streamRef.current = null;
+    }
+    setCameraOpen(false);
+  }, []);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((track) => track.stop());
+      }
+    };
+  }, []);
+
+  const openCamera = async () => {
+    setCameraError(null);
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: "environment", width: { ideal: 1280 }, height: { ideal: 960 } },
+        audio: false,
+      });
+      streamRef.current = stream;
+      setCameraOpen(true);
+      // Wait for video element to mount
+      setTimeout(() => {
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+          videoRef.current.play();
+        }
+      }, 100);
+    } catch (err) {
+      setCameraError(
+        lang === "en"
+          ? "Could not access camera. Please allow camera permission."
+          : "无法访问相机，请允许相机权限。"
+      );
+    }
+  };
+
+  const capturePhoto = () => {
+    if (!videoRef.current || !canvasRef.current) return;
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    ctx.drawImage(video, 0, 0);
+    const dataUrl = canvas.toDataURL("image/jpeg", 0.9);
+    stopCamera();
+    processImage(dataUrl);
+  };
 
   const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = () => {
-      setPreview(reader.result as string);
-      setAnalyzing(true);
-      // Simulate AI analysis - will be replaced with real AI later
-      setTimeout(() => {
-        navigate("/result", { state: { image: reader.result } });
-      }, 2500);
-    };
+    reader.onload = () => processImage(reader.result as string);
     reader.readAsDataURL(file);
+  };
+
+  const processImage = (imageData: string) => {
+    setPreview(imageData);
+    setAnalyzing(true);
+    setTimeout(() => {
+      navigate("/result", { state: { image: imageData } });
+    }, 2500);
   };
 
   return (
@@ -34,7 +95,7 @@ const ScanPage = () => {
       <motion.button
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        onClick={() => navigate("/")}
+        onClick={() => { stopCamera(); navigate("/"); }}
         className="self-start mb-6 flex items-center gap-2 text-elder-base text-muted-foreground hover:text-foreground transition-colors"
       >
         <ArrowLeft size={24} />
@@ -51,6 +112,50 @@ const ScanPage = () => {
       <p className="text-elder-base text-muted-foreground mb-8 text-center">
         {t(lang, "uploadDesc")}
       </p>
+
+      {/* Camera view */}
+      {cameraOpen && !analyzing && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="flex flex-col items-center gap-4 w-full max-w-md mb-6"
+        >
+          <div className="relative w-full rounded-2xl overflow-hidden shadow-medium bg-foreground/5">
+            <video
+              ref={videoRef}
+              autoPlay
+              playsInline
+              muted
+              className="w-full rounded-2xl"
+              style={{ transform: "scaleX(-1)" }}
+            />
+          </div>
+          <div className="flex gap-3 w-full">
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.97 }}
+              onClick={capturePhoto}
+              className="flex-1 bg-accent text-accent-foreground rounded-2xl p-5 shadow-medium text-elder-lg font-extrabold text-center"
+            >
+              📸 {lang === "en" ? "Capture" : lang === "ms" ? "Tangkap" : lang === "ta" ? "படம் எடு" : "拍照"}
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.97 }}
+              onClick={stopCamera}
+              className="bg-card text-card-foreground rounded-2xl p-5 shadow-soft text-elder-lg font-bold text-center border border-border"
+            >
+              ✕
+            </motion.button>
+          </div>
+          <canvas ref={canvasRef} className="hidden" />
+        </motion.div>
+      )}
+
+      {/* Camera error */}
+      {cameraError && (
+        <p className="text-destructive text-elder-base font-bold mb-4 text-center">{cameraError}</p>
+      )}
 
       {analyzing && preview ? (
         <motion.div
@@ -70,25 +175,17 @@ const ScanPage = () => {
             </span>
           </div>
         </motion.div>
-      ) : (
+      ) : !cameraOpen && (
         <div className="flex flex-col gap-4 w-full max-w-sm">
           {/* Camera button */}
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.97 }}
-            onClick={() => cameraInputRef.current?.click()}
+            onClick={openCamera}
             className="w-full bg-accent text-accent-foreground rounded-2xl p-6 shadow-medium text-elder-xl font-extrabold text-center"
           >
             {t(lang, "takePhoto")}
           </motion.button>
-          <input
-            ref={cameraInputRef}
-            type="file"
-            accept="image/*"
-            capture="environment"
-            className="hidden"
-            onChange={handleFile}
-          />
 
           {/* Gallery button */}
           <motion.button
