@@ -18,7 +18,7 @@ export const languages: Language[] = [
 // Simple translations for UI elements
 export const translations: Record<string, Record<string, string>> = {
   en: {
-    appName: "Ah Gong Ah Ma Helper",
+    appName: "SteadyLA",
     tagline: "We make things simple for you",
     scanButton: "📷  Scan & Explain",
     scanSubtext: "Take a photo of anything you need help with",
@@ -35,7 +35,7 @@ export const translations: Record<string, Record<string, string>> = {
     changeLang: "Change Language",
   },
   zh: {
-    appName: "阿公阿嬷帮手",
+    appName: "SteadyLA",
     tagline: "我们帮你简单说明",
     scanButton: "📷  扫描 & 解释",
     scanSubtext: "拍张照片，我们帮你解释",
@@ -52,7 +52,7 @@ export const translations: Record<string, Record<string, string>> = {
     changeLang: "更换语言",
   },
   ms: {
-    appName: "Pembantu Datuk Nenek",
+    appName: "SteadyLA",
     tagline: "Kami permudahkan untuk anda",
     scanButton: "📷  Imbas & Terang",
     scanSubtext: "Ambil gambar apa sahaja yang anda perlukan bantuan",
@@ -69,7 +69,7 @@ export const translations: Record<string, Record<string, string>> = {
     changeLang: "Tukar Bahasa",
   },
   ta: {
-    appName: "தாத்தா பாட்டி உதவி",
+    appName: "SteadyLA",
     tagline: "நாங்கள் எளிமையாக்குவோம்",
     scanButton: "📷  ஸ்கேன் & விளக்கம்",
     scanSubtext: "உங்களுக்கு உதவி தேவையான எதையும் புகைப்படம் எடுங்கள்",
@@ -86,7 +86,7 @@ export const translations: Record<string, Record<string, string>> = {
     changeLang: "மொழியை மாற்று",
   },
   hk: {
-    appName: "阿公阿嬷帮手",
+    appName: "SteadyLA",
     tagline: "我们帮你简单说明",
     scanButton: "📷  扫描 & 解释",
     scanSubtext: "拍张照片，我们帮你解释",
@@ -103,7 +103,7 @@ export const translations: Record<string, Record<string, string>> = {
     changeLang: "更换语言",
   },
   ct: {
-    appName: "阿公阿嬷帮手",
+    appName: "SteadyLA",
     tagline: "我哋帮你简单解释",
     scanButton: "📷  扫描 & 解释",
     scanSubtext: "影张相，我哋帮你解释",
@@ -120,7 +120,7 @@ export const translations: Record<string, Record<string, string>> = {
     changeLang: "换语言",
   },
   tc: {
-    appName: "阿公阿嬷帮手",
+    appName: "SteadyLA",
     tagline: "阮共汝简单说明",
     scanButton: "📷  扫描 & 解释",
     scanSubtext: "拍张相，阮共汝解释",
