@@ -33,6 +33,9 @@ export const translations: Record<string, Record<string, string>> = {
     backHome: "🏠  Go Home",
     scanAgain: "📷  Scan Again",
     changeLang: "Change Language",
+    textSize: "Text Size",
+    listenButton: "🔊  Listen",
+    stopButton: "⏹️  Stop",
   },
   zh: {
     appName: "SteadyLA",
@@ -50,6 +53,9 @@ export const translations: Record<string, Record<string, string>> = {
     backHome: "🏠  回首页",
     scanAgain: "📷  再扫描",
     changeLang: "更换语言",
+    textSize: "文字大小",
+    listenButton: "🔊  听一听",
+    stopButton: "⏹️  停止",
   },
   ms: {
     appName: "SteadyLA",
@@ -67,6 +73,9 @@ export const translations: Record<string, Record<string, string>> = {
     backHome: "🏠  Halaman Utama",
     scanAgain: "📷  Imbas Lagi",
     changeLang: "Tukar Bahasa",
+    textSize: "Saiz Teks",
+    listenButton: "🔊  Dengar",
+    stopButton: "⏹️  Berhenti",
   },
   ta: {
     appName: "SteadyLA",
@@ -84,6 +93,9 @@ export const translations: Record<string, Record<string, string>> = {
     backHome: "🏠  முகப்புக்குச் செல்",
     scanAgain: "📷  மீண்டும் ஸ்கேன்",
     changeLang: "மொழியை மாற்று",
+    textSize: "எழுத்து அளவு",
+    listenButton: "🔊  கேளுங்கள்",
+    stopButton: "⏹️  நிறுத்து",
   },
   hk: {
     appName: "SteadyLA",
@@ -101,6 +113,9 @@ export const translations: Record<string, Record<string, string>> = {
     backHome: "🏠  回首页",
     scanAgain: "📷  再扫描",
     changeLang: "更换语言",
+    textSize: "文字大小",
+    listenButton: "🔊  听一听",
+    stopButton: "⏹️  停止",
   },
   ct: {
     appName: "SteadyLA",
@@ -118,6 +133,9 @@ export const translations: Record<string, Record<string, string>> = {
     backHome: "🏠  返首页",
     scanAgain: "📷  再扫描",
     changeLang: "换语言",
+    textSize: "文字大小",
+    listenButton: "🔊  听下",
+    stopButton: "⏹️  停",
   },
   tc: {
     appName: "SteadyLA",
@@ -135,6 +153,9 @@ export const translations: Record<string, Record<string, string>> = {
     backHome: "🏠  转去首页",
     scanAgain: "📷  再扫描",
     changeLang: "换语言",
+    textSize: "文字大小",
+    listenButton: "🔊  听一下",
+    stopButton: "⏹️  停",
   },
 };
 
