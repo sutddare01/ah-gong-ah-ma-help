@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { useLanguage } from "@/lib/language-context";
 import { t } from "@/lib/languages";
 import { ArrowLeft } from "lucide-react";
+import LanguagePicker from "@/components/LanguagePicker";
 
 const ScanPage = () => {
   const { lang } = useLanguage();
@@ -25,7 +26,6 @@ const ScanPage = () => {
     setCameraOpen(false);
   }, []);
 
-  // Cleanup on unmount
   useEffect(() => {
     return () => {
       if (streamRef.current) {
@@ -43,7 +43,6 @@ const ScanPage = () => {
       });
       streamRef.current = stream;
       setCameraOpen(true);
-      // Wait for video element to mount
       setTimeout(() => {
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
@@ -90,7 +89,7 @@ const ScanPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center px-4 py-8">
+    <div className="min-h-screen bg-background flex flex-col items-center px-4 py-8 pb-16">
       {/* Back button */}
       <motion.button
         initial={{ opacity: 0 }}
@@ -152,7 +151,6 @@ const ScanPage = () => {
         </motion.div>
       )}
 
-      {/* Camera error */}
       {cameraError && (
         <p className="text-destructive text-elder-base font-bold mb-4 text-center">{cameraError}</p>
       )}
@@ -176,8 +174,7 @@ const ScanPage = () => {
           </div>
         </motion.div>
       ) : !cameraOpen && (
-        <div className="flex flex-col gap-4 w-full max-w-sm">
-          {/* Camera button */}
+        <div className="flex flex-col gap-4 w-full max-w-sm mb-10">
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.97 }}
@@ -187,7 +184,6 @@ const ScanPage = () => {
             {t(lang, "takePhoto")}
           </motion.button>
 
-          {/* Gallery button */}
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.97 }}
@@ -204,6 +200,18 @@ const ScanPage = () => {
             onChange={handleFile}
           />
         </div>
+      )}
+
+      {/* Language Picker - shown below scan options */}
+      {!analyzing && !cameraOpen && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="w-full"
+        >
+          <LanguagePicker />
+        </motion.div>
       )}
     </div>
   );
