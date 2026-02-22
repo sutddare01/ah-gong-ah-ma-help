@@ -13,6 +13,17 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        sans: ["Nunito", "system-ui", "-apple-system", "sans-serif"],
+      },
+      fontSize: {
+        "elder-sm": ["1.125rem", { lineHeight: "1.6" }],
+        "elder-base": ["1.25rem", { lineHeight: "1.6" }],
+        "elder-lg": ["1.5rem", { lineHeight: "1.5" }],
+        "elder-xl": ["1.875rem", { lineHeight: "1.4" }],
+        "elder-2xl": ["2.25rem", { lineHeight: "1.3" }],
+        "elder-3xl": ["3rem", { lineHeight: "1.2" }],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -65,25 +76,22 @@ export default {
       },
       keyframes: {
         "accordion-down": {
-          from: {
-            height: "0",
-          },
-          to: {
-            height: "var(--radix-accordion-content-height)",
-          },
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
         },
         "accordion-up": {
-          from: {
-            height: "var(--radix-accordion-content-height)",
-          },
-          to: {
-            height: "0",
-          },
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
+        },
+        "pulse-gentle": {
+          "0%, 100%": { transform: "scale(1)", opacity: "1" },
+          "50%": { transform: "scale(1.05)", opacity: "0.9" },
         },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "pulse-gentle": "pulse-gentle 2.5s ease-in-out infinite",
       },
     },
   },
