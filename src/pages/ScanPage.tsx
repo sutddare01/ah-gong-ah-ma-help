@@ -143,7 +143,7 @@ const ScanPage = () => {
           className="flex flex-col items-center gap-4 w-full max-w-md mb-6"
         >
           <div className="relative w-full rounded-2xl overflow-hidden shadow-medium bg-foreground/5">
-            <video ref={videoRef} autoPlay playsInline muted className="w-full rounded-2xl" style={{ transform: "scaleX(-1)" }} />
+            <video ref={videoRef} autoPlay playsInline muted className="w-full rounded-2xl" />
           </div>
           <div className="flex gap-3 w-full">
             <motion.button
