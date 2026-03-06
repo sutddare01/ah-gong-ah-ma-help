@@ -35,7 +35,7 @@ const Index = () => {
       >
         <img
           src={heroImage}
-          alt="SteadyLA helper"
+          alt="SteadyLah! helper"
           className="w-36 h-36 mx-auto mb-4 rounded-full shadow-soft object-cover"
         />
         <h1 className="text-elder-2xl font-extrabold text-foreground">
