@@ -4,6 +4,8 @@ import { motion } from "framer-motion";
 import { useLanguage } from "@/lib/language-context";
 import { t } from "@/lib/languages";
 import { ArrowLeft } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 
 const ScanPage = () => {
   const { lang } = useLanguage();
@@ -79,12 +81,36 @@ const ScanPage = () => {
     reader.readAsDataURL(file);
   };
 
-  const processImage = (imageData: string) => {
+  const processImage = async (imageData: string) => {
     setPreview(imageData);
     setAnalyzing(true);
-    setTimeout(() => {
-      navigate("/result", { state: { image: imageData } });
-    }, 2500);
+
+    try {
+      const { data, error } = await supabase.functions.invoke("scan-explain", {
+        body: { image: imageData, lang },
+      });
+
+      if (error) throw error;
+
+      if (data?.error) {
+        throw new Error(data.error);
+      }
+
+      navigate("/result", {
+        state: { image: imageData, explanation: data.explanation },
+      });
+    } catch (err: any) {
+      console.error("Scan error:", err);
+      toast({
+        title: lang === "en" ? "Something went wrong" : "出了点问题",
+        description: lang === "en"
+          ? "Could not analyze the image. Please try again."
+          : "无法分析图片，请再试一次。",
+        variant: "destructive",
+      });
+      setAnalyzing(false);
+      setPreview(null);
+    }
   };
 
   return (

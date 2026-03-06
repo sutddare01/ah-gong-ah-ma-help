@@ -20,26 +20,15 @@ const langToSpeech: Record<string, string> = {
   hi: "hi-IN",
 };
 
-// Mock AI explanations per language
-const mockExplanations: Record<string, string> = {
-  en: "This looks like a product label or manual. Here's what it says in simple words:\n\n🔹 This item needs to be kept in a cool, dry place.\n🔹 Do not use after the expiry date.\n🔹 If you feel unwell after using it, please see a doctor.\n\nWould you like me to explain anything else?",
-  zh: "这看起来是一个产品标签或说明书。简单来说：\n\n🔹 这个东西要放在阴凉干燥的地方。\n🔹 过期了就不要用了。\n🔹 用了以后如果不舒服，就去看医生。\n\n还有什么需要我帮你解释的吗？",
-  ms: "Ini kelihatan seperti label produk atau manual. Dalam kata mudah:\n\n🔹 Simpan di tempat yang sejuk dan kering.\n🔹 Jangan guna selepas tarikh luput.\n🔹 Jika rasa tak sihat selepas guna, jumpa doktor.\n\nNak saya terangkan apa-apa lagi?",
-  ta: "இது ஒரு பொருளின் லேபிள் அல்லது கையேடு போல் தெரிகிறது. எளிமையாக:\n\n🔹 குளிர்ச்சியான, உலர்ந்த இடத்தில் வைக்கவும்.\n🔹 காலாவதி தேதிக்குப் பிறகு பயன்படுத்த வேண்டாம்.\n🔹 பயன்படுத்திய பிறகு உடல்நிலை சரியில்லை என்றால், மருத்துவரைப் பாருங்கள்.\n\nவேறு எதாவது விளக்க வேண்டுமா?",
-  hk: "这看起来是一个产品标签或说明书。简单来说：\n\n🔹 这个东西要放在阴凉干燥的地方。\n🔹 过期了就不要用了。\n🔹 用了以后如果不舒服，就去看医生。\n\n还有什么需要我帮你解释的吗？",
-  ct: "呢个睇落系产品标签或者说明书。简单嚟讲：\n\n🔹 呢样嘢要摆喺阴凉干燥嘅地方。\n🔹 过咗期就唔好用喇。\n🔹 用完之后如果唔舒服，就去睇医生。\n\n仲有咩需要我帮你解释？",
-  tc: "这看起来是一个产品标签或说明书。简单讲：\n\n🔹 这个物件爱放在阴凉干燥的所在。\n🔹 过期了就莫用了。\n🔹 用了后若是无爽快，就去看医生。\n\n还有啥物需要我共汝解释？",
-};
-
 const ResultPage = () => {
   const { lang } = useLanguage();
   const navigate = useNavigate();
   const location = useLocation();
-  const image = (location.state as { image?: string })?.image;
+  const state = location.state as { image?: string; explanation?: string } | null;
+  const image = state?.image;
+  const explanation = state?.explanation || "No explanation available. Please try scanning again.";
   const [isSpeaking, setIsSpeaking] = useState(false);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
-
-  const explanation = mockExplanations[lang] || mockExplanations.en;
 
   // Clean up speech on unmount
   useEffect(() => {
@@ -60,7 +49,7 @@ const ResultPage = () => {
 
     const utterance = new SpeechSynthesisUtterance(cleanText);
     utterance.lang = langToSpeech[lang] || "en-SG";
-    utterance.rate = 0.85; // Slightly slower for elderly
+    utterance.rate = 0.85;
     utterance.pitch = 1;
 
     utterance.onend = () => setIsSpeaking(false);
