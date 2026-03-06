@@ -103,8 +103,43 @@ const ChatPage = () => {
         }
       );
 
-      if (!resp.ok || !resp.body) {
-        throw new Error("Failed to get response");
+      if (!resp.ok) {
+        const payload = await resp.json().catch(() => null);
+        const backendError = payload?.error as string | undefined;
+
+        if (backendError) {
+          throw new Error(backendError);
+        }
+
+        if (resp.status === 402) {
+          throw new Error(
+            lang === "en"
+              ? "AI credits are exhausted. Please top up and try again."
+              : "AI额度不足，请充值后再试。"
+          );
+        }
+
+        if (resp.status === 429) {
+          throw new Error(
+            lang === "en"
+              ? "Too many requests. Please wait a moment and try again."
+              : "请求过多，请稍后再试。"
+          );
+        }
+
+        throw new Error(
+          lang === "en"
+            ? "Could not get a response right now. Please try again."
+            : "暂时无法获取回复，请稍后再试。"
+        );
+      }
+
+      if (!resp.body) {
+        throw new Error(
+          lang === "en"
+            ? "Could not get a response right now. Please try again."
+            : "暂时无法获取回复，请稍后再试。"
+        );
       }
 
       const reader = resp.body.getReader();
@@ -149,11 +184,18 @@ const ChatPage = () => {
           }
         }
       }
-    } catch (e) {
+    } catch (e: unknown) {
       console.error(e);
+      const errorMessage =
+        e instanceof Error && e.message
+          ? e.message
+          : lang === "en"
+            ? "Sorry, something went wrong. Please try again."
+            : "抱歉，出了点问题。请再试一次。";
+
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: lang === "en" ? "Sorry, something went wrong. Please try again." : "抱歉，出了点问题。请再试一次。" },
+        { role: "assistant", content: errorMessage },
       ]);
     } finally {
       setIsLoading(false);
