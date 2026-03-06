@@ -90,7 +90,38 @@ const ScanPage = () => {
         body: { image: imageData, lang },
       });
 
-      if (error) throw error;
+      if (error) {
+        const context = (error as { context?: Response }).context;
+        if (context) {
+          const status = context.status;
+          const payload = await context.json().catch(() => null);
+          const backendMessage = payload?.error as string | undefined;
+
+          if (status === 402) {
+            throw new Error(
+              backendMessage ||
+                (lang === "en"
+                  ? "AI credits are exhausted. Please top up and try again."
+                  : "AI额度不足，请充值后再试。")
+            );
+          }
+
+          if (status === 429) {
+            throw new Error(
+              backendMessage ||
+                (lang === "en"
+                  ? "Too many requests. Please wait a moment and try again."
+                  : "请求过多，请稍后再试。")
+            );
+          }
+
+          if (backendMessage) {
+            throw new Error(backendMessage);
+          }
+        }
+
+        throw error;
+      }
 
       if (data?.error) {
         throw new Error(data.error);
@@ -99,13 +130,18 @@ const ScanPage = () => {
       navigate("/result", {
         state: { image: imageData, explanation: data.explanation },
       });
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Scan error:", err);
+      const description =
+        err instanceof Error && err.message
+          ? err.message
+          : lang === "en"
+            ? "Could not analyze the image. Please try again."
+            : "无法分析图片，请再试一次。";
+
       toast({
         title: lang === "en" ? "Something went wrong" : "出了点问题",
-        description: lang === "en"
-          ? "Could not analyze the image. Please try again."
-          : "无法分析图片，请再试一次。",
+        description,
         variant: "destructive",
       });
       setAnalyzing(false);
