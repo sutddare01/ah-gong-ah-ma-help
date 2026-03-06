@@ -26,7 +26,7 @@ export const otherLanguages: Language[] = [
 // Simple translations for UI elements
 export const translations: Record<string, Record<string, string>> = {
   en: {
-    appName: "SteadyLA",
+    appName: "SteadyLah!",
     tagline: "We make things simple for you",
     scanButton: "📷  Scan & Explain",
     scanSubtext: "Take a photo of anything you need help with",
@@ -47,7 +47,7 @@ export const translations: Record<string, Record<string, string>> = {
     chatButton: "💬  Ask Me Anything",
   },
   zh: {
-    appName: "SteadyLA",
+    appName: "SteadyLah!",
     tagline: "我们帮你简单说明",
     scanButton: "📷  扫描 & 解释",
     scanSubtext: "拍张照片，我们帮你解释",
@@ -68,7 +68,7 @@ export const translations: Record<string, Record<string, string>> = {
     chatButton: "💬  问我任何问题",
   },
   ms: {
-    appName: "SteadyLA",
+    appName: "SteadyLah!",
     tagline: "Kami permudahkan untuk anda",
     scanButton: "📷  Imbas & Terang",
     scanSubtext: "Ambil gambar apa sahaja yang anda perlukan bantuan",
@@ -89,7 +89,7 @@ export const translations: Record<string, Record<string, string>> = {
     chatButton: "💬  Tanya Saya",
   },
   ta: {
-    appName: "SteadyLA",
+    appName: "SteadyLah!",
     tagline: "நாங்கள் எளிமையாக்குவோம்",
     scanButton: "📷  ஸ்கேன் & விளக்கம்",
     scanSubtext: "உங்களுக்கு உதவி தேவையான எதையும் புகைப்படம் எடுங்கள்",
@@ -110,7 +110,7 @@ export const translations: Record<string, Record<string, string>> = {
     chatButton: "💬  எதையும் கேளுங்கள்",
   },
   hk: {
-    appName: "SteadyLA",
+    appName: "SteadyLah!",
     tagline: "我们帮你简单说明",
     scanButton: "📷  扫描 & 解释",
     scanSubtext: "拍张照片，我们帮你解释",
@@ -131,7 +131,7 @@ export const translations: Record<string, Record<string, string>> = {
     chatButton: "💬  问我任何问题",
   },
   ct: {
-    appName: "SteadyLA",
+    appName: "SteadyLah!",
     tagline: "我哋帮你简单解释",
     scanButton: "📷  扫描 & 解释",
     scanSubtext: "影张相，我哋帮你解释",
@@ -152,7 +152,7 @@ export const translations: Record<string, Record<string, string>> = {
     chatButton: "💬  问我乜都得",
   },
   tc: {
-    appName: "SteadyLA",
+    appName: "SteadyLah!",
     tagline: "阮共汝简单说明",
     scanButton: "📷  扫描 & 解释",
     scanSubtext: "拍张相，阮共汝解释",
@@ -173,7 +173,7 @@ export const translations: Record<string, Record<string, string>> = {
     chatButton: "💬  问我什么拢好",
   },
   vi: {
-    appName: "SteadyLA",
+    appName: "SteadyLah!",
     tagline: "Chúng tôi giúp bạn dễ hiểu hơn",
     scanButton: "📷  Quét & Giải thích",
     scanSubtext: "Chụp ảnh bất kỳ thứ gì bạn cần giúp đỡ",
@@ -195,7 +195,7 @@ export const translations: Record<string, Record<string, string>> = {
     othersTitle: "🌏  Other Languages",
   },
   th: {
-    appName: "SteadyLA",
+    appName: "SteadyLah!",
     tagline: "เราทำให้ง่ายสำหรับคุณ",
     scanButton: "📷  สแกน & อธิบาย",
     scanSubtext: "ถ่ายรูปสิ่งที่คุณต้องการความช่วยเหลือ",
@@ -217,7 +217,7 @@ export const translations: Record<string, Record<string, string>> = {
     othersTitle: "🌏  Other Languages",
   },
   ko: {
-    appName: "SteadyLA",
+    appName: "SteadyLah!",
     tagline: "쉽게 설명해 드릴게요",
     scanButton: "📷  스캔 & 설명",
     scanSubtext: "도움이 필요한 것을 사진으로 찍어주세요",
@@ -239,7 +239,7 @@ export const translations: Record<string, Record<string, string>> = {
     othersTitle: "🌏  Other Languages",
   },
   ja: {
-    appName: "SteadyLA",
+    appName: "SteadyLah!",
     tagline: "わかりやすくお伝えします",
     scanButton: "📷  スキャン＆説明",
     scanSubtext: "助けが必要なものを写真に撮ってください",
@@ -261,7 +261,7 @@ export const translations: Record<string, Record<string, string>> = {
     othersTitle: "🌏  Other Languages",
   },
   hi: {
-    appName: "SteadyLA",
+    appName: "SteadyLah!",
     tagline: "हम आपके लिए आसान बनाते हैं",
     scanButton: "📷  स्कैन और समझाएं",
     scanSubtext: "जिस चीज़ में मदद चाहिए उसकी फोटो लें",

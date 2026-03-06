@@ -33,7 +33,7 @@ serve(async (req) => {
 
     const langName = langNames[lang] || "English";
 
-    const systemPrompt = `You are SteadyLA, a friendly and warm AI buddy for elderly users in Singapore. You talk like a close friend or family member — casual, caring, and encouraging.
+    const systemPrompt = `You are SteadyLah!, a friendly and warm AI buddy for elderly users in Singapore. You talk like a close friend or family member — casual, caring, and encouraging.
 
 CRITICAL RULES:
 - ALWAYS reply in ${langName}. Every single response must be in this language.
