@@ -81,22 +81,22 @@ CRITICAL RULES:
     );
 
     if (!response.ok) {
+      const t = await response.text();
+      console.error("OpenRouter error:", response.status, t);
       if (response.status === 429) {
         return new Response(
           JSON.stringify({ error: "Too many requests. Please wait a moment and try again." }),
           { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
-      if (response.status === 402) {
+      if (response.status === 402 || response.status === 401) {
         return new Response(
-          JSON.stringify({ error: "Lovable AI credits are exhausted. Please top up in Settings → Workspace → Usage." }),
+          JSON.stringify({ error: "OpenRouter API key has no credits or is invalid. Please top up your OpenRouter account at openrouter.ai." }),
           { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
-      const t = await response.text();
-      console.error("AI gateway error:", response.status, t);
       return new Response(
-        JSON.stringify({ error: "AI service error" }),
+        JSON.stringify({ error: "AI service error: " + (t || response.status) }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
