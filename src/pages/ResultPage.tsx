@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { Pause, Play } from "lucide-react";
 import { useLanguage } from "@/lib/language-context";
 import { t } from "@/lib/languages";
 
@@ -28,6 +29,7 @@ const ResultPage = () => {
   const image = state?.image;
   const explanation = state?.explanation || "No explanation available. Please try scanning again.";
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
 
   // Clean up speech on unmount
@@ -41,6 +43,7 @@ const ResultPage = () => {
     if (isSpeaking) {
       window.speechSynthesis.cancel();
       setIsSpeaking(false);
+      setIsPaused(false);
       return;
     }
 
@@ -52,12 +55,22 @@ const ResultPage = () => {
     utterance.rate = 0.85;
     utterance.pitch = 1;
 
-    utterance.onend = () => setIsSpeaking(false);
-    utterance.onerror = () => setIsSpeaking(false);
+    utterance.onend = () => { setIsSpeaking(false); setIsPaused(false); };
+    utterance.onerror = () => { setIsSpeaking(false); setIsPaused(false); };
 
     utteranceRef.current = utterance;
     setIsSpeaking(true);
     window.speechSynthesis.speak(utterance);
+  };
+
+  const handlePauseResume = () => {
+    if (isPaused) {
+      window.speechSynthesis.resume();
+      setIsPaused(false);
+    } else {
+      window.speechSynthesis.pause();
+      setIsPaused(true);
+    }
   };
 
   return (
@@ -107,6 +120,19 @@ const ResultPage = () => {
       >
         {isSpeaking ? t(lang, "stopButton") : t(lang, "listenButton")}
       </motion.button>
+
+      {isSpeaking && (
+        <motion.button
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          whileTap={{ scale: 0.97 }}
+          onClick={handlePauseResume}
+          className="w-full max-w-md rounded-2xl p-4 shadow-soft text-elder-lg font-bold text-center mb-6 bg-muted text-muted-foreground border border-border"
+        >
+          {isPaused ? <Play size={20} className="inline mr-2" /> : <Pause size={20} className="inline mr-2" />}
+          {isPaused ? (lang === "en" ? "Resume" : "继续") : (lang === "en" ? "Pause" : "暂停")}
+        </motion.button>
+      )}
 
       <div className="flex flex-col gap-3 w-full max-w-sm">
         <motion.button

@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, Send, Volume2, VolumeX } from "lucide-react";
+import { ArrowLeft, Send, Volume2, VolumeX, Pause, Play } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { useLanguage } from "@/lib/language-context";
 import { t } from "@/lib/languages";
@@ -51,6 +51,7 @@ const ChatPage = () => {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [speakingIdx, setSpeakingIdx] = useState<number | null>(null);
+  const [isPaused, setIsPaused] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -61,18 +62,30 @@ const ChatPage = () => {
     if (speakingIdx === idx) {
       window.speechSynthesis.cancel();
       setSpeakingIdx(null);
+      setIsPaused(false);
       return;
     }
     window.speechSynthesis.cancel();
+    setIsPaused(false);
     const clean = text.replace(/[\u{1F300}-\u{1FAFF}]|[\u{2600}-\u{27BF}]|[#*_~`>-]/gu, "");
     const utterance = new SpeechSynthesisUtterance(clean);
     utterance.lang = langToSpeech[lang] || "en-SG";
     utterance.rate = 0.85;
-    utterance.onend = () => setSpeakingIdx(null);
-    utterance.onerror = () => setSpeakingIdx(null);
+    utterance.onend = () => { setSpeakingIdx(null); setIsPaused(false); };
+    utterance.onerror = () => { setSpeakingIdx(null); setIsPaused(false); };
     setSpeakingIdx(idx);
     window.speechSynthesis.speak(utterance);
   }, [speakingIdx, lang]);
+
+  const handlePauseResume = useCallback(() => {
+    if (isPaused) {
+      window.speechSynthesis.resume();
+      setIsPaused(false);
+    } else {
+      window.speechSynthesis.pause();
+      setIsPaused(true);
+    }
+  }, [isPaused]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -261,17 +274,28 @@ const ChatPage = () => {
                   <div className="prose prose-sm max-w-none text-elder-base leading-relaxed">
                     <ReactMarkdown>{msg.content}</ReactMarkdown>
                   </div>
-                  <button
-                    onClick={() => handleSpeak(msg.content, i)}
-                    className={`mt-3 flex items-center gap-2 rounded-xl px-4 py-2 text-elder-sm font-bold transition-colors ${
-                      speakingIdx === i
-                        ? "bg-destructive/10 text-destructive"
-                        : "bg-primary/10 text-primary hover:bg-primary/20"
-                    }`}
-                  >
-                    {speakingIdx === i ? <VolumeX size={18} /> : <Volume2 size={18} />}
-                    {speakingIdx === i ? t(lang, "stopButton") : t(lang, "listenButton")}
-                  </button>
+                  <div className="mt-3 flex items-center gap-2">
+                    <button
+                      onClick={() => handleSpeak(msg.content, i)}
+                      className={`flex items-center gap-2 rounded-xl px-4 py-2 text-elder-sm font-bold transition-colors ${
+                        speakingIdx === i
+                          ? "bg-destructive/10 text-destructive"
+                          : "bg-primary/10 text-primary hover:bg-primary/20"
+                      }`}
+                    >
+                      {speakingIdx === i ? <VolumeX size={18} /> : <Volume2 size={18} />}
+                      {speakingIdx === i ? t(lang, "stopButton") : t(lang, "listenButton")}
+                    </button>
+                    {speakingIdx === i && (
+                      <button
+                        onClick={handlePauseResume}
+                        className="flex items-center gap-2 rounded-xl px-4 py-2 text-elder-sm font-bold transition-colors bg-muted text-muted-foreground hover:bg-muted/80"
+                      >
+                        {isPaused ? <Play size={18} /> : <Pause size={18} />}
+                        {isPaused ? (lang === "en" ? "Resume" : "继续") : (lang === "en" ? "Pause" : "暂停")}
+                      </button>
+                    )}
+                  </div>
                 </div>
               ) : (
                 <p className="text-elder-base font-bold">{msg.content}</p>
