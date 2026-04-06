@@ -1,12 +1,13 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, Send, Volume2, VolumeX, Pause, Play } from "lucide-react";
+import { ArrowLeft, Send, Volume2, VolumeX, Pause, Play, ImagePlus, X } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { useLanguage } from "@/lib/language-context";
 import { t } from "@/lib/languages";
 
-type Msg = { role: "user" | "assistant"; content: string };
+type MsgContent = string | Array<{ type: "text"; text: string } | { type: "image_url"; image_url: { url: string } }>;
+type Msg = { role: "user" | "assistant"; content: MsgContent; imagePreview?: string };
 
 const langToSpeech: Record<string, string> = {
   en: "en-SG", zh: "zh-CN", ms: "ms-MY", ta: "ta-IN",
@@ -44,15 +45,46 @@ const chatTitle: Record<string, string> = {
   hi: "💬 पूछें",
 };
 
+const getTextContent = (content: MsgContent): string => {
+  if (typeof content === "string") return content;
+  const textPart = content.find((p) => p.type === "text");
+  return textPart && "text" in textPart ? textPart.text : "";
+};
+
 const ChatPage = () => {
   const { lang } = useLanguage();
   const navigate = useNavigate();
+  const location = useLocation();
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
+  const [pendingImage, setPendingImage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [speakingIdx, setSpeakingIdx] = useState<number | null>(null);
   const [isPaused, setIsPaused] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const initializedRef = useRef(false);
+
+  // Handle scan context passed from ResultPage
+  useEffect(() => {
+    if (initializedRef.current) return;
+    const state = location.state as { scanImage?: string; scanExplanation?: string } | null;
+    if (state?.scanExplanation) {
+      initializedRef.current = true;
+      const contextContent: MsgContent = state.scanImage
+        ? [
+            { type: "text", text: state.scanExplanation },
+            { type: "image_url", image_url: { url: state.scanImage } },
+          ]
+        : state.scanExplanation;
+
+      setMessages([
+        { role: "assistant", content: contextContent, imagePreview: state.scanImage },
+      ]);
+      // Clear navigation state
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
 
   useEffect(() => {
     return () => { window.speechSynthesis.cancel(); };
@@ -91,17 +123,45 @@ const ChatPage = () => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      setPendingImage(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  };
+
   const send = async () => {
     const text = input.trim();
-    if (!text || isLoading) return;
+    if ((!text && !pendingImage) || isLoading) return;
 
-    const userMsg: Msg = { role: "user", content: text };
+    let userContent: MsgContent;
+    let imagePreview: string | undefined;
+
+    if (pendingImage) {
+      imagePreview = pendingImage;
+      userContent = [
+        { type: "text", text: text || (lang === "en" ? "What is this?" : "这是什么？") },
+        { type: "image_url", image_url: { url: pendingImage } },
+      ];
+    } else {
+      userContent = text;
+    }
+
+    const userMsg: Msg = { role: "user", content: userContent, imagePreview };
     const newMessages = [...messages, userMsg];
     setMessages(newMessages);
     setInput("");
+    setPendingImage(null);
     setIsLoading(true);
 
     let assistantSoFar = "";
+
+    // Prepare messages for API (strip imagePreview field)
+    const apiMessages = newMessages.map(({ role, content }) => ({ role, content }));
 
     try {
       const resp = await fetch(
@@ -112,48 +172,20 @@ const ChatPage = () => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
           },
-          body: JSON.stringify({ messages: newMessages, lang }),
+          body: JSON.stringify({ messages: apiMessages, lang }),
         }
       );
 
       if (!resp.ok) {
         const payload = await resp.json().catch(() => null);
         const backendError = payload?.error as string | undefined;
-
-        if (backendError) {
-          throw new Error(backendError);
-        }
-
-        if (resp.status === 402) {
-          throw new Error(
-            lang === "en"
-              ? "AI credits are exhausted. Please top up and try again."
-              : "AI额度不足，请充值后再试。"
-          );
-        }
-
-        if (resp.status === 429) {
-          throw new Error(
-            lang === "en"
-              ? "Too many requests. Please wait a moment and try again."
-              : "请求过多，请稍后再试。"
-          );
-        }
-
-        throw new Error(
-          lang === "en"
-            ? "Could not get a response right now. Please try again."
-            : "暂时无法获取回复，请稍后再试。"
-        );
+        if (backendError) throw new Error(backendError);
+        if (resp.status === 402) throw new Error(lang === "en" ? "AI credits are exhausted. Please top up and try again." : "AI额度不足，请充值后再试。");
+        if (resp.status === 429) throw new Error(lang === "en" ? "Too many requests. Please wait a moment and try again." : "请求过多，请稍后再试。");
+        throw new Error(lang === "en" ? "Could not get a response right now. Please try again." : "暂时无法获取回复，请稍后再试。");
       }
 
-      if (!resp.body) {
-        throw new Error(
-          lang === "en"
-            ? "Could not get a response right now. Please try again."
-            : "暂时无法获取回复，请稍后再试。"
-        );
-      }
+      if (!resp.body) throw new Error(lang === "en" ? "Could not get a response right now. Please try again." : "暂时无法获取回复，请稍后再试。");
 
       const reader = resp.body.getReader();
       const decoder = new TextDecoder();
@@ -199,17 +231,8 @@ const ChatPage = () => {
       }
     } catch (e: unknown) {
       console.error(e);
-      const errorMessage =
-        e instanceof Error && e.message
-          ? e.message
-          : lang === "en"
-            ? "Sorry, something went wrong. Please try again."
-            : "抱歉，出了点问题。请再试一次。";
-
-      setMessages((prev) => [
-        ...prev,
-        { role: "assistant", content: errorMessage },
-      ]);
+      const errorMessage = e instanceof Error && e.message ? e.message : lang === "en" ? "Sorry, something went wrong. Please try again." : "抱歉，出了点问题。请再试一次。";
+      setMessages((prev) => [...prev, { role: "assistant", content: errorMessage }]);
     } finally {
       setIsLoading(false);
     }
@@ -269,14 +292,21 @@ const ChatPage = () => {
                   : "bg-card text-card-foreground border border-border"
               }`}
             >
+              {msg.imagePreview && (
+                <img
+                  src={msg.imagePreview}
+                  alt="Attached"
+                  className="w-32 h-32 object-cover rounded-xl mb-3"
+                />
+              )}
               {msg.role === "assistant" ? (
                 <div>
                   <div className="prose prose-sm max-w-none text-elder-base leading-relaxed">
-                    <ReactMarkdown>{msg.content}</ReactMarkdown>
+                    <ReactMarkdown>{getTextContent(msg.content)}</ReactMarkdown>
                   </div>
                   <div className="mt-3 flex items-center gap-2">
                     <button
-                      onClick={() => handleSpeak(msg.content, i)}
+                      onClick={() => handleSpeak(getTextContent(msg.content), i)}
                       className={`flex items-center gap-2 rounded-xl px-4 py-2 text-elder-sm font-bold transition-colors ${
                         speakingIdx === i
                           ? "bg-destructive/10 text-destructive"
@@ -298,7 +328,7 @@ const ChatPage = () => {
                   </div>
                 </div>
               ) : (
-                <p className="text-elder-base font-bold">{msg.content}</p>
+                <p className="text-elder-base font-bold">{getTextContent(msg.content)}</p>
               )}
             </div>
           </motion.div>
@@ -323,9 +353,40 @@ const ChatPage = () => {
         <div ref={bottomRef} />
       </div>
 
+      {/* Pending image preview */}
+      {pendingImage && (
+        <div className="px-4 pb-2">
+          <div className="relative inline-block">
+            <img src={pendingImage} alt="Pending" className="w-20 h-20 object-cover rounded-xl border border-border" />
+            <button
+              onClick={() => setPendingImage(null)}
+              className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-1"
+            >
+              <X size={14} />
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Input */}
       <div className="border-t border-border bg-card px-4 py-4">
-        <div className="flex gap-3 max-w-2xl mx-auto">
+        <div className="flex gap-3 max-w-2xl mx-auto items-center">
+          <input
+            type="file"
+            ref={fileInputRef}
+            accept="image/*"
+            capture="environment"
+            className="hidden"
+            onChange={handleImageSelect}
+          />
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            onClick={() => fileInputRef.current?.click()}
+            className="bg-accent text-accent-foreground rounded-2xl p-4 shadow-soft"
+            title={lang === "en" ? "Add image" : "添加图片"}
+          >
+            <ImagePlus size={24} />
+          </motion.button>
           <input
             type="text"
             value={input}
@@ -338,7 +399,7 @@ const ChatPage = () => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={send}
-            disabled={isLoading || !input.trim()}
+            disabled={isLoading || (!input.trim() && !pendingImage)}
             className="bg-primary text-primary-foreground rounded-2xl px-6 py-4 shadow-medium disabled:opacity-50"
           >
             <Send size={24} />
