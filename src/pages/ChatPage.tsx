@@ -274,17 +274,28 @@ const ChatPage = () => {
                   <div className="prose prose-sm max-w-none text-elder-base leading-relaxed">
                     <ReactMarkdown>{msg.content}</ReactMarkdown>
                   </div>
-                  <button
-                    onClick={() => handleSpeak(msg.content, i)}
-                    className={`mt-3 flex items-center gap-2 rounded-xl px-4 py-2 text-elder-sm font-bold transition-colors ${
-                      speakingIdx === i
-                        ? "bg-destructive/10 text-destructive"
-                        : "bg-primary/10 text-primary hover:bg-primary/20"
-                    }`}
-                  >
-                    {speakingIdx === i ? <VolumeX size={18} /> : <Volume2 size={18} />}
-                    {speakingIdx === i ? t(lang, "stopButton") : t(lang, "listenButton")}
-                  </button>
+                  <div className="mt-3 flex items-center gap-2">
+                    <button
+                      onClick={() => handleSpeak(msg.content, i)}
+                      className={`flex items-center gap-2 rounded-xl px-4 py-2 text-elder-sm font-bold transition-colors ${
+                        speakingIdx === i
+                          ? "bg-destructive/10 text-destructive"
+                          : "bg-primary/10 text-primary hover:bg-primary/20"
+                      }`}
+                    >
+                      {speakingIdx === i ? <VolumeX size={18} /> : <Volume2 size={18} />}
+                      {speakingIdx === i ? t(lang, "stopButton") : t(lang, "listenButton")}
+                    </button>
+                    {speakingIdx === i && (
+                      <button
+                        onClick={handlePauseResume}
+                        className="flex items-center gap-2 rounded-xl px-4 py-2 text-elder-sm font-bold transition-colors bg-muted text-muted-foreground hover:bg-muted/80"
+                      >
+                        {isPaused ? <Play size={18} /> : <Pause size={18} />}
+                        {isPaused ? (lang === "en" ? "Resume" : "继续") : (lang === "en" ? "Pause" : "暂停")}
+                      </button>
+                    )}
+                  </div>
                 </div>
               ) : (
                 <p className="text-elder-base font-bold">{msg.content}</p>
