@@ -62,6 +62,16 @@ const ResultPage = () => {
     window.speechSynthesis.speak(utterance);
   };
 
+  const handlePauseResume = () => {
+    if (isPaused) {
+      window.speechSynthesis.resume();
+      setIsPaused(false);
+    } else {
+      window.speechSynthesis.pause();
+      setIsPaused(true);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background flex flex-col items-center px-4 py-8 pb-16">
       <motion.h1
