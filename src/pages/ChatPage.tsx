@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, Send, Volume2, VolumeX, Pause, Play, ImagePlus, X } from "lucide-react";
+import { ArrowLeft, Send, Volume2, VolumeX, Pause, Play, ImagePlus, X, Mic, MicOff } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { useLanguage } from "@/lib/language-context";
 import { t } from "@/lib/languages";
@@ -61,9 +61,11 @@ const ChatPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [speakingIdx, setSpeakingIdx] = useState<number | null>(null);
   const [isPaused, setIsPaused] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const initializedRef = useRef(false);
+  const recognitionRef = useRef<any>(null);
 
   // Handle scan context passed from ResultPage
   useEffect(() => {
@@ -87,8 +89,60 @@ const ChatPage = () => {
   }, [location.state]);
 
   useEffect(() => {
-    return () => { window.speechSynthesis.cancel(); };
+    return () => {
+      window.speechSynthesis.cancel();
+      if (recognitionRef.current) {
+        try { recognitionRef.current.stop(); } catch {}
+      }
+    };
   }, []);
+
+  const toggleRecording = useCallback(() => {
+    if (isRecording && recognitionRef.current) {
+      recognitionRef.current.stop();
+      setIsRecording(false);
+      return;
+    }
+
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      setInput(prev => prev || (lang === "en" ? "(Voice not supported on this browser)" : "(此浏览器不支持语音)"));
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = langToSpeech[lang] || "en-SG";
+    recognition.interimResults = true;
+    recognition.continuous = false;
+    recognition.maxAlternatives = 1;
+
+    let finalTranscript = "";
+
+    recognition.onresult = (event: any) => {
+      let interim = "";
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const transcript = event.results[i][0].transcript;
+        if (event.results[i].isFinal) {
+          finalTranscript += transcript;
+        } else {
+          interim = transcript;
+        }
+      }
+      setInput(finalTranscript || interim);
+    };
+
+    recognition.onend = () => {
+      setIsRecording(false);
+    };
+
+    recognition.onerror = () => {
+      setIsRecording(false);
+    };
+
+    recognitionRef.current = recognition;
+    recognition.start();
+    setIsRecording(true);
+  }, [isRecording, lang]);
 
   const handleSpeak = useCallback((text: string, idx: number) => {
     if (speakingIdx === idx) {
@@ -369,8 +423,8 @@ const ChatPage = () => {
       )}
 
       {/* Input */}
-      <div className="border-t border-border bg-card px-4 py-4">
-        <div className="flex gap-3 max-w-2xl mx-auto items-center">
+      <div className="border-t border-border bg-card px-3 py-3 safe-area-bottom">
+        <div className="flex gap-2 max-w-2xl mx-auto items-center">
           <input
             type="file"
             ref={fileInputRef}
@@ -382,27 +436,39 @@ const ChatPage = () => {
           <motion.button
             whileTap={{ scale: 0.95 }}
             onClick={() => fileInputRef.current?.click()}
-            className="bg-accent text-accent-foreground rounded-2xl p-4 shadow-soft"
+            className="bg-accent text-accent-foreground rounded-2xl p-3 shadow-soft flex-shrink-0"
             title={lang === "en" ? "Add image" : "添加图片"}
           >
-            <ImagePlus size={24} />
+            <ImagePlus size={22} />
+          </motion.button>
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            onClick={toggleRecording}
+            className={`rounded-2xl p-3 shadow-soft flex-shrink-0 transition-colors ${
+              isRecording
+                ? "bg-destructive text-destructive-foreground animate-pulse"
+                : "bg-accent text-accent-foreground"
+            }`}
+            title={lang === "en" ? (isRecording ? "Stop recording" : "Voice input") : (isRecording ? "停止录音" : "语音输入")}
+          >
+            {isRecording ? <MicOff size={22} /> : <Mic size={22} />}
           </motion.button>
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && send()}
-            placeholder={chatPlaceholders[lang] || chatPlaceholders.en}
-            className="flex-1 bg-background border border-border rounded-2xl px-5 py-4 text-elder-base text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+            placeholder={isRecording ? (lang === "en" ? "🎤 Listening..." : "🎤 正在听...") : (chatPlaceholders[lang] || chatPlaceholders.en)}
+            className="flex-1 min-w-0 bg-background border border-border rounded-2xl px-4 py-3 text-elder-base text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
           />
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={send}
             disabled={isLoading || (!input.trim() && !pendingImage)}
-            className="bg-primary text-primary-foreground rounded-2xl px-6 py-4 shadow-medium disabled:opacity-50"
+            className="bg-primary text-primary-foreground rounded-2xl px-5 py-3 shadow-medium disabled:opacity-50 flex-shrink-0"
           >
-            <Send size={24} />
+            <Send size={22} />
           </motion.button>
         </div>
       </div>
