@@ -54,8 +54,8 @@ const ResultPage = () => {
     utterance.rate = 0.85;
     utterance.pitch = 1;
 
-    utterance.onend = () => setIsSpeaking(false);
-    utterance.onerror = () => setIsSpeaking(false);
+    utterance.onend = () => { setIsSpeaking(false); setIsPaused(false); };
+    utterance.onerror = () => { setIsSpeaking(false); setIsPaused(false); };
 
     utteranceRef.current = utterance;
     setIsSpeaking(true);
