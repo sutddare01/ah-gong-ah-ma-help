@@ -42,10 +42,10 @@ const WelcomePage = () => {
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.4 }}
-        whileHover={{ scale: 1.03 }}
-        whileTap={{ scale: 0.97 }}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
         onClick={handleContinue}
-        className="w-full max-w-sm bg-accent text-accent-foreground rounded-2xl p-6 shadow-medium text-elder-xl font-extrabold text-center"
+        className="w-full max-w-md bg-accent text-accent-foreground rounded-3xl p-8 shadow-medium text-elder-2xl font-extrabold text-center border-4 border-accent/30"
       >
         ✅ {lang === "en" ? "Continue" : lang === "zh" || lang === "hk" ? "继续" : lang === "ms" ? "Teruskan" : lang === "ta" ? "தொடரவும்" : lang === "ct" ? "继续" : lang === "tc" ? "继续" : lang === "vi" ? "Tiếp tục" : lang === "th" ? "ดำเนินการต่อ" : "Continue"}
       </motion.button>

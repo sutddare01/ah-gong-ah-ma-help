@@ -62,18 +62,30 @@ const ChatPage = () => {
     if (speakingIdx === idx) {
       window.speechSynthesis.cancel();
       setSpeakingIdx(null);
+      setIsPaused(false);
       return;
     }
     window.speechSynthesis.cancel();
+    setIsPaused(false);
     const clean = text.replace(/[\u{1F300}-\u{1FAFF}]|[\u{2600}-\u{27BF}]|[#*_~`>-]/gu, "");
     const utterance = new SpeechSynthesisUtterance(clean);
     utterance.lang = langToSpeech[lang] || "en-SG";
     utterance.rate = 0.85;
-    utterance.onend = () => setSpeakingIdx(null);
-    utterance.onerror = () => setSpeakingIdx(null);
+    utterance.onend = () => { setSpeakingIdx(null); setIsPaused(false); };
+    utterance.onerror = () => { setSpeakingIdx(null); setIsPaused(false); };
     setSpeakingIdx(idx);
     window.speechSynthesis.speak(utterance);
   }, [speakingIdx, lang]);
+
+  const handlePauseResume = useCallback(() => {
+    if (isPaused) {
+      window.speechSynthesis.resume();
+      setIsPaused(false);
+    } else {
+      window.speechSynthesis.pause();
+      setIsPaused(true);
+    }
+  }, [isPaused]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });

@@ -20,7 +20,7 @@ const scaleMap: Record<TextSize, number> = {
 
 export const TextSizeProvider = ({ children }: { children: ReactNode }) => {
   const [textSize, setTextSize] = useState<TextSize>(() => {
-    return (localStorage.getItem("textSize") as TextSize) || "x-large";
+    return (localStorage.getItem("textSize") as TextSize) || "large";
   });
 
   useEffect(() => {
