@@ -61,9 +61,11 @@ const ChatPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [speakingIdx, setSpeakingIdx] = useState<number | null>(null);
   const [isPaused, setIsPaused] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const initializedRef = useRef(false);
+  const recognitionRef = useRef<any>(null);
 
   // Handle scan context passed from ResultPage
   useEffect(() => {
