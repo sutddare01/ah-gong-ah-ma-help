@@ -42,6 +42,7 @@ const ResultPage = () => {
     if (isSpeaking) {
       window.speechSynthesis.cancel();
       setIsSpeaking(false);
+      setIsPaused(false);
       return;
     }
 
