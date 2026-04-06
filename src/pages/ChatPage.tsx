@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, Send, Volume2, VolumeX } from "lucide-react";
+import { ArrowLeft, Send, Volume2, VolumeX, Pause, Play } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { useLanguage } from "@/lib/language-context";
 import { t } from "@/lib/languages";
