@@ -28,6 +28,7 @@ const ResultPage = () => {
   const image = state?.image;
   const explanation = state?.explanation || "No explanation available. Please try scanning again.";
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
 
   // Clean up speech on unmount
