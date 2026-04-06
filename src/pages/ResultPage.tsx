@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { Pause, Play } from "lucide-react";
 import { useLanguage } from "@/lib/language-context";
 import { t } from "@/lib/languages";
 
