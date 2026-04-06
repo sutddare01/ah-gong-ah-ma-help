@@ -121,6 +121,19 @@ const ResultPage = () => {
         {isSpeaking ? t(lang, "stopButton") : t(lang, "listenButton")}
       </motion.button>
 
+      {isSpeaking && (
+        <motion.button
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          whileTap={{ scale: 0.97 }}
+          onClick={handlePauseResume}
+          className="w-full max-w-md rounded-2xl p-4 shadow-soft text-elder-lg font-bold text-center mb-6 bg-muted text-muted-foreground border border-border"
+        >
+          {isPaused ? <Play size={20} className="inline mr-2" /> : <Pause size={20} className="inline mr-2" />}
+          {isPaused ? (lang === "en" ? "Resume" : "继续") : (lang === "en" ? "Pause" : "暂停")}
+        </motion.button>
+      )}
+
       <div className="flex flex-col gap-3 w-full max-w-sm">
         <motion.button
           whileHover={{ scale: 1.02 }}
