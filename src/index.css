@@ -151,4 +151,7 @@
   .shadow-glow {
     box-shadow: var(--shadow-glow);
   }
+  .safe-area-bottom {
+    padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+  }
 }
