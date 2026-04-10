@@ -11,7 +11,7 @@ const langNames: Record<string, string> = {
   zh: "Simplified Chinese (华语)",
   ms: "Malay (Bahasa Melayu)",
   ta: "Tamil (தமிழ்)",
-  hk: "Hokkien-style Simplified Chinese",
+  hk: "Hokkien (福建话/闽南语) — write in Simplified Chinese but use Hokkien vocabulary, grammar patterns, and expressions like 汝(you), 阮(we/I), 伊(he/she), 甲(eat), 讲(speak), 物件(thing), 头家(boss), 欢喜(happy). Mix in Hokkien romanization (Pe̍h-ōe-jī) in parentheses for key words",
   ct: "Cantonese (广东话)",
   tc: "Teochew (潮州话)",
   vi: "Vietnamese (Tiếng Việt)",
