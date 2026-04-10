@@ -11,7 +11,7 @@ type Msg = { role: "user" | "assistant"; content: MsgContent; imagePreview?: str
 
 const langToSpeech: Record<string, string> = {
   en: "en-SG", zh: "zh-CN", ms: "ms-MY", ta: "ta-IN",
-  hk: "zh-CN", ct: "zh-HK", tc: "zh-CN", vi: "vi-VN",
+  hk: "zh-TW", ct: "yue-HK", tc: "zh-TW", vi: "vi-VN",
   th: "th-TH", ko: "ko-KR", ja: "ja-JP", hi: "hi-IN",
 };
 
